@@ -25,6 +25,7 @@ An event-aware, object-oriented quantitative backtesting framework built from sc
 - [Design Decisions](#design-decisions)
 - [Project Structure](#project-structure)
 - [Testing](#testing)
+- [Limitations](#limitations)
 - [Roadmap](#roadmap)
 - [Disclaimer](#disclaimer)
 - [License](#license)
@@ -257,6 +258,18 @@ The project ships with a `pytest` suite covering signal correctness (crossover t
 ```bash
 pytest
 ```
+
+## Limitations
+
+The framework prioritizes transparency and correctness of the core simulation, but there are known constraints worth being upfront about:
+
+- **Single-asset, single-position backtests only.** `BacktestEngine` simulates one instrument with a single long/short/flat position at a time — it does not currently support multi-asset portfolios, capital allocation across strategies, or position sizing beyond fully invested/fully short.
+- **No intraday granularity.** The engine and data loader operate on daily OHLCV bars; the T+1 execution rule is a same-day-close-to-next-day proxy, not a simulation of intraday fills, order books, or partial fills.
+- **Flat, symmetric transaction costs.** Commission and slippage are modeled as constant basis-point charges on turnover. This does not capture cost effects that vary with volatility, order size, market impact, or time of day.
+- **No risk-free rate in the Sharpe ratio.** `PerformanceEvaluator` computes the Sharpe ratio assuming a zero risk-free rate, which will overstate risk-adjusted returns relative to a Sharpe ratio computed against a real cash benchmark.
+- **`yfinance` as the sole data source.** Historical FX data quality (including the sparse/unreliable FX volume field, which the loader has to explicitly work around) is entirely dependent on Yahoo Finance's feed; there is no fallback data provider or point-in-time data revision handling.
+- **The AI layer explains, it does not validate or predict.** `TradeExplainer` is deliberately constrained to describing why a mechanical signal already fired, using only the data it's given. It is not a second opinion on whether the trade was a good idea, and its fallback string (used when no API key is configured or a request fails) is a template, not an explanation grounded in that specific trade.
+- **No walk-forward or out-of-sample testing yet.** Strategies are currently evaluated in-sample over the full historical window; the framework does not yet separate parameter selection from evaluation data (see [Roadmap](#roadmap)).
 
 ## Roadmap
 
