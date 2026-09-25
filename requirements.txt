@@ -1,0 +1,14 @@
+# Core numerical and tabular computation
+numpy>=1.26,<3
+pandas>=2.2,<3
+scipy>=1.13,<2
+
+# Market-data acquisition and local caching support
+yfinance>=0.2.54
+
+# LLM-powered trade explanations
+cohere>=5.0,<6
+python-dotenv>=1.0,<2
+
+# Test suite
+pytest>=8,<9
